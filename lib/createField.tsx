@@ -1,10 +1,6 @@
 import { Form, FormItemProps } from '@tencent/tea-component';
 import { useFormikContext } from 'formik';
-import React, {
-  ComponentType,
-  NamedExoticComponent,
-  PropsWithRef,
-} from 'react';
+import React, { ComponentType } from 'react';
 import getStatusProps from './getStatusProps';
 
 export interface FieldProps {
@@ -19,18 +15,23 @@ export interface FieldProps {
 }
 
 export default function createField<P>(
-  Component: ComponentType<
-    Pick<FieldProps & P, Exclude<keyof P, keyof FieldProps>>
-  >,
+  component: ComponentType<P>,
   fieldToValue?: (value: any) => any,
   valueToField?: (value: any) => any
-): NamedExoticComponent<PropsWithRef<FieldProps & P>> {
+) {
   return React.memo(
-    ({ name, label, required, formItemProps, ...props }: FieldProps & P) => {
+    ({
+      name,
+      label,
+      required,
+      formItemProps,
+      ...props
+    }: FieldProps & Exclude<P, 'value' | 'onChange'>) => {
       const form = useFormikContext();
       const field = form.getFieldProps(name);
       const meta = form.getFieldMeta(name);
       const helpers = form.getFieldHelpers(name);
+      const Component: any = component;
       return (
         <Form.Item
           label={label}
