@@ -11,9 +11,9 @@ export interface FieldProps {
   /** Form.Item required */
   required?: boolean;
   /** Form.Item formItem */
-  formItem: boolean;
+  formItem?: boolean;
   /** Form.Item props */
-  formItemProps?: Exclude<FormItemProps, 'label' | 'required'>;
+  formItemProps?: FormItemProps;
 }
 
 export default function createField<P>(
@@ -29,7 +29,7 @@ export default function createField<P>(
       formItem = true,
       formItemProps,
       ...props
-    }: FieldProps & Exclude<P, 'value' | 'onChange'>) => {
+    }: FieldProps & Omit<P, 'value' | 'onChange'>) => {
       const form = useFormikContext();
       const field = form.getFieldProps(name);
       const meta = form.getFieldMeta(name);
