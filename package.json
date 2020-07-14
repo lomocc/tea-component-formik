@@ -56,9 +56,9 @@
     ]
   },
   "optionalDependencies": {
-    "@tencent/tea-component": "^2.3.7",
-    "@types/yup": "^0.29.3",
-    "formik": "^2.1.4",
-    "yup": "^0.29.1"
+    "@tencent/tea-component": "*",
+    "@types/yup": "*",
+    "formik": "*",
+    "yup": "*"
   }
 }
