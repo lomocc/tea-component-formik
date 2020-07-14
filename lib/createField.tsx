@@ -4,12 +4,14 @@ import React, { ComponentType } from 'react';
 import getStatusProps from './getStatusProps';
 
 export interface FieldProps {
-  /** name */
+  /** Field name */
   name: string;
   /** Form.Item label */
   label?: FormItemProps['label'];
   /** Form.Item required */
   required?: boolean;
+  /** Form.Item formItem */
+  formItem: boolean;
   /** Form.Item props */
   formItemProps?: Exclude<FormItemProps, 'label' | 'required'>;
 }
@@ -24,6 +26,7 @@ export default function createField<P>(
       name,
       label,
       required,
+      formItem = true,
       formItemProps,
       ...props
     }: FieldProps & Exclude<P, 'value' | 'onChange'>) => {
@@ -32,25 +35,31 @@ export default function createField<P>(
       const meta = form.getFieldMeta(name);
       const helpers = form.getFieldHelpers(name);
       const Component: any = component;
-      return (
+
+      const children = (
+        <Component
+          // {...field}
+          {...props}
+          value={fieldToValue ? fieldToValue(field.value) : field.value}
+          onChange={(value) => {
+            if (!meta.touched) {
+              helpers.setTouched(true);
+            }
+            helpers.setValue(valueToField ? valueToField(value) : value);
+          }}
+        />
+      );
+      return formItem ? (
         <Form.Item
           label={label}
           required={!!required}
           {...getStatusProps(meta, form.isValidating)}
           {...formItemProps}
         >
-          <Component
-            // {...field}
-            {...props}
-            value={fieldToValue ? fieldToValue(field.value) : field.value}
-            onChange={(value) => {
-              if (!meta.touched) {
-                helpers.setTouched(true);
-              }
-              helpers.setValue(valueToField ? valueToField(value) : value);
-            }}
-          />
+          {children}
         </Form.Item>
+      ) : (
+        children
       );
     }
   );
