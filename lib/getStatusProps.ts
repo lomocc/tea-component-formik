@@ -29,5 +29,7 @@ export function getStatus(meta: FieldMetaProps<any>, isValidating: boolean) {
   if (!meta.touched) {
     return (null as any) as FormControlProps['status'];
   }
-  return (meta.error ? 'error' : 'success') as FormControlProps['status'];
+  return (typeof meta.error === 'string'
+    ? 'error'
+    : 'success') as FormControlProps['status'];
 }
