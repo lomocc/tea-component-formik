@@ -16,11 +16,7 @@ export interface FieldProps {
   formItemProps?: FormItemProps;
 }
 
-export default function createField<P>(
-  component: ComponentType<P>,
-  fieldToValue?: (value: any) => any,
-  valueToField?: (value: any) => any
-) {
+export default function createField<P>(component: ComponentType<P>) {
   return React.memo(
     ({
       name,
@@ -40,12 +36,12 @@ export default function createField<P>(
         <Component
           // {...field}
           {...props}
-          value={fieldToValue ? fieldToValue(field.value) : field.value}
+          value={field.value}
           onChange={(value) => {
             if (!meta.touched) {
               helpers.setTouched(true);
             }
-            helpers.setValue(valueToField ? valueToField(value) : value);
+            helpers.setValue(value);
           }}
         />
       );
