@@ -3,7 +3,7 @@ import { Button, Form } from '@tencent/tea-component';
 import '@tencent/tea-component/lib/tea.css';
 import { Formik } from 'formik';
 import React from 'react';
-import { Input, Yup } from '../src';
+import { Input, Select, Yup } from '..';
 
 const meta: Meta = {
   title: 'Input',
@@ -29,6 +29,17 @@ const validationSchema = Yup.object({
   ),
 });
 
+const options = [
+  {
+    value: 'name',
+    text: '产品名称',
+  },
+  {
+    value: 'id',
+    text: '产品ID',
+  },
+];
+
 const Template: Story = args => (
   <Formik
     initialValues={{
@@ -51,6 +62,13 @@ const Template: Story = args => (
             name="passwordConfirmation"
             label="密码确认"
             placeholder="请再次输入密码"
+          />
+          <Select
+            name="searchKey"
+            label="searchKey"
+            options={options}
+            type="simulate"
+            appearance="button"
           />
           <Button htmlType="submit" type="primary">
             提交

@@ -16,6 +16,16 @@ export interface FieldProps {
   formItemProps?: FormItemProps;
 }
 
+type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never;
+
+/**
+ * 排除 value onChange 属性
+ */
+export type FieldPropsOmitInputProps<T> = FieldProps &
+  DistributiveOmit<T, 'value' | 'onChange'>;
+
 export default function createField<P>(component: ComponentType<P>) {
   return React.memo(
     ({
@@ -25,7 +35,7 @@ export default function createField<P>(component: ComponentType<P>) {
       formItem = true,
       formItemProps,
       ...props
-    }: FieldProps & Omit<P, 'value' | 'onChange'>) => {
+    }: FieldPropsOmitInputProps<P>) => {
       const form = useFormikContext();
       const field = form.getFieldProps(name);
       const meta = form.getFieldMeta(name);
