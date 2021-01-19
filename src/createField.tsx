@@ -4,16 +4,30 @@ import React, { ComponentType } from 'react';
 import getStatusProps from './getStatusProps';
 
 export interface FieldProps {
-  /** Field name */
+  /**
+   * Field name
+   */
   name: string;
-  /** Form.Item label */
+  /**
+   * Form.Item label
+   */
   label?: FormItemProps['label'];
-  /** Form.Item required */
+  /**
+   * Form.Item required
+   */
   required?: boolean;
-  /** Form.Item formItem */
-  formItem?: boolean;
-  /** Form.Item props */
+  /**
+   * Form.Item formItem
+   */
+  formItem?: ComponentType<FormItemProps> | false;
+  /**
+   * Form.Item props
+   */
   formItemProps?: FormItemProps;
+  /**
+   * 外层容器，如：InputAdornment
+   */
+  container?: ComponentType;
 }
 
 type DistributiveOmit<T, K extends keyof any> = T extends any
@@ -32,8 +46,9 @@ export default function createField<P>(component: ComponentType<P>) {
       name,
       label,
       required,
-      formItem = true,
+      formItem = Form.Item,
       formItemProps,
+      container,
       ...props
     }: FieldPropsOmitInputProps<P>) => {
       const form = useFormikContext();
@@ -55,18 +70,24 @@ export default function createField<P>(component: ComponentType<P>) {
           }}
         />
       );
-      return formItem ? (
-        <Form.Item
-          label={label}
-          required={!!required}
-          {...getStatusProps(meta, form.isValidating)}
-          {...formItemProps}
-        >
-          {children}
-        </Form.Item>
-      ) : (
-        children
-      );
+      const element = container
+        ? React.createElement(container, null, children)
+        : children;
+      if (formItem) {
+        const FormItem = formItem;
+        return (
+          <FormItem
+            label={label}
+            required={!!required}
+            {...getStatusProps(meta, form.isValidating)}
+            {...formItemProps}
+          >
+            {element}
+          </FormItem>
+        );
+      } else {
+        return element;
+      }
     }
   );
 }
