@@ -34,6 +34,7 @@ const App = () => (
   <Formik
     initialValues={{
       username: '',
+      url: '',
       password: '',
       passwordConfirmation: '',
     }}
@@ -48,6 +49,13 @@ const App = () => (
         <Form>
           <Input name="username" label="用户名" placeholder="请输入用户名" />
           <Input name="password" label="密码" placeholder="请输入密码" />
+          <Input
+            name="url"
+            label="网站"
+            placeholder="请输入域名"
+            container={InputAdornment}
+            containerProps={{ before: 'https://', after: '.com' }}
+          />
           <Input
             name="passwordConfirmation"
             label="密码确认"

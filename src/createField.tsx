@@ -1,9 +1,9 @@
 import { Form, FormItemProps } from '@tencent/tea-component';
 import { useFormikContext } from 'formik';
-import React, { ComponentType } from 'react';
+import React, { ComponentProps, ComponentType, ElementType } from 'react';
 import getStatusProps from './getStatusProps';
 
-export interface FieldProps {
+export interface FieldProps<T extends ElementType> {
   /**
    * Field name
    */
@@ -27,7 +27,11 @@ export interface FieldProps {
   /**
    * 外层容器，如：InputAdornment
    */
-  container?: ComponentType;
+  container?: T;
+  /**
+   * 外层容器属性
+   */
+  containerProps?: ComponentProps<T>;
 }
 
 type DistributiveOmit<T, K extends keyof any> = T extends any
@@ -37,32 +41,43 @@ type DistributiveOmit<T, K extends keyof any> = T extends any
 /**
  * 排除 value onChange 属性
  */
-export type FieldPropsOmitInputProps<T> = FieldProps &
-  DistributiveOmit<T, 'value' | 'onChange'>;
+export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<
+  P,
+  'value' | 'onChange'
+> &
+  (T extends ElementType ? FieldProps<T> : never);
+
+const memo: <T extends ElementType>(
+  Component: T,
+  areEqual?: (
+    prevProps: React.ComponentProps<T>,
+    nextProps: React.ComponentProps<T>
+  ) => boolean
+) => T = React.memo;
 
 export default function createField<P>(component: ComponentType<P>) {
-  return React.memo(
-    ({
+  return memo(
+    <T extends ElementType>({
       name,
       label,
       required,
-      formItem = Form.Item,
+      formItem: FormItem = Form.Item,
       formItemProps,
       container,
+      containerProps,
       ...props
-    }: FieldPropsOmitInputProps<P>) => {
+    }: FieldPropsOmitInputProps<P, T>) => {
       const form = useFormikContext();
       const field = form.getFieldProps(name);
       const meta = form.getFieldMeta(name);
       const helpers = form.getFieldHelpers(name);
-      const Component: any = component;
+      const Component: ElementType = component;
 
       const children = (
         <Component
-          // {...field}
           {...props}
           value={field.value}
-          onChange={(value: any) => {
+          onChange={(value: unknown) => {
             if (!meta.touched) {
               helpers.setTouched(true);
             }
@@ -71,10 +86,9 @@ export default function createField<P>(component: ComponentType<P>) {
         />
       );
       const element = container
-        ? React.createElement(container, null, children)
+        ? React.createElement(container, containerProps, children)
         : children;
-      if (formItem) {
-        const FormItem = formItem;
+      if (FormItem) {
         return (
           <FormItem
             label={label}

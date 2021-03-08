@@ -1,5 +1,5 @@
 import { Meta, Story } from '@storybook/react';
-import { Button, Form } from '@tencent/tea-component';
+import { Button, Form, InputAdornment } from '@tencent/tea-component';
 import '@tencent/tea-component/lib/tea.css';
 import { Formik } from 'formik';
 import React from 'react';
@@ -44,6 +44,7 @@ const Template: Story = args => (
   <Formik
     initialValues={{
       username: '',
+      url: '',
       password: '',
       passwordConfirmation: '',
     }}
@@ -57,6 +58,13 @@ const Template: Story = args => (
       <form onSubmit={handleSubmit}>
         <Form>
           <Input name="username" label="用户名" placeholder="请输入用户名" />
+          <Input
+            name="url"
+            label="网站"
+            placeholder="请输入域名"
+            container={InputAdornment}
+            containerProps={{ before: 'https://', after: '.com' }}
+          />
           <Input name="password" label="密码" placeholder="请输入密码" />
           <Input
             name="passwordConfirmation"
