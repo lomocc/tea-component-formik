@@ -45,11 +45,7 @@ export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<
   P,
   'value' | 'onChange'
 > &
-  ('onChange' extends keyof P
-    ? {
-        onChange?: P['onChange'];
-      }
-    : never) &
+  Partial<Pick<P, Extract<keyof P, 'onChange'>>> &
   (T extends ElementType ? FieldProps<T> : never);
 
 const memo: <T extends ElementType>(
