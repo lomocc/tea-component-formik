@@ -66,6 +66,7 @@ export default function createField<P>(component: ComponentType<P>) {
       formItemProps,
       container,
       containerProps,
+      // @ts-ignore
       onChange,
       ...props
     }: FieldPropsOmitInputProps<P, T>) => {
@@ -84,7 +85,6 @@ export default function createField<P>(component: ComponentType<P>) {
               helpers.setTouched(true);
             }
             helpers.setValue(value);
-            // @ts-ignore
             onChange?.(value, ...args);
           }}
         />
