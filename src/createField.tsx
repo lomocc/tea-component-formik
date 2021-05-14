@@ -41,10 +41,7 @@ type DistributiveOmit<T, K extends keyof any> = T extends any
 /**
  * 排除 value onChange 属性
  */
-export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<
-  P,
-  'value' | 'onChange'
-> &
+export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<P, 'value'> &
   (T extends ElementType ? FieldProps<T> : never);
 
 const memo: <T extends ElementType>(
@@ -65,6 +62,8 @@ export default function createField<P>(component: ComponentType<P>) {
       formItemProps,
       container,
       containerProps,
+      // @ts-ignore
+      onChange,
       ...props
     }: FieldPropsOmitInputProps<P, T>) => {
       const form = useFormikContext();
@@ -77,11 +76,12 @@ export default function createField<P>(component: ComponentType<P>) {
         <Component
           {...props}
           value={field.value}
-          onChange={(value: unknown) => {
+          onChange={(value: any, ...args: any[]) => {
             if (!meta.touched) {
               helpers.setTouched(true);
             }
             helpers.setValue(value);
+            onChange?.(value, ...args);
           }}
         />
       );

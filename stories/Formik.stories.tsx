@@ -1,9 +1,9 @@
 import { Meta, Story } from '@storybook/react';
-import { Button, Form, InputAdornment } from '@tencent/tea-component';
+import { Button, Form, InputAdornment, Radio } from '@tencent/tea-component';
 import '@tencent/tea-component/lib/tea.css';
 import { Formik } from 'formik';
 import React from 'react';
-import { Input, Select, Yup } from '..';
+import { Input, RadioGroup, Select, Yup } from '..';
 
 const meta: Meta = {
   title: 'Input',
@@ -47,6 +47,7 @@ const Template: Story = args => (
       url: '',
       password: '',
       passwordConfirmation: '',
+      sex: '',
     }}
     validationSchema={validationSchema}
     onSubmit={values => {
@@ -64,7 +65,23 @@ const Template: Story = args => (
             placeholder="请输入域名"
             container={InputAdornment}
             containerProps={{ before: 'https://', after: '.com' }}
+            onChange={value => {
+              console.log('====================================');
+              console.log('onChange', value);
+              console.log('====================================');
+            }}
           />
+          <RadioGroup
+            name="sex"
+            onChange={value => {
+              console.log('====================================');
+              console.log('onChange', value);
+              console.log('====================================');
+            }}
+          >
+            <Radio name="male">男性</Radio>
+            <Radio name="female">女性</Radio>
+          </RadioGroup>
           <Input name="password" label="密码" placeholder="请输入密码" />
           <Input
             name="passwordConfirmation"
