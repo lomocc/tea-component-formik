@@ -41,7 +41,15 @@ type DistributiveOmit<T, K extends keyof any> = T extends any
 /**
  * 排除 value onChange 属性
  */
-export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<P, 'value'> &
+export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<
+  P,
+  'value' | 'onChange'
+> &
+  ('onChange' extends keyof P
+    ? {
+        onChange?: P['onChange'];
+      }
+    : never) &
   (T extends ElementType ? FieldProps<T> : never);
 
 const memo: <T extends ElementType>(
@@ -62,7 +70,6 @@ export default function createField<P>(component: ComponentType<P>) {
       formItemProps,
       container,
       containerProps,
-      // @ts-ignore
       onChange,
       ...props
     }: FieldPropsOmitInputProps<P, T>) => {
@@ -81,6 +88,7 @@ export default function createField<P>(component: ComponentType<P>) {
               helpers.setTouched(true);
             }
             helpers.setValue(value);
+            // @ts-ignore
             onChange?.(value, ...args);
           }}
         />
