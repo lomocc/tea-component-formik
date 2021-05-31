@@ -67,6 +67,8 @@ export default function createField<P>(component: ComponentType<P>) {
       container,
       containerProps,
       // @ts-ignore
+      onBlur,
+      // @ts-ignore
       onChange,
       ...props
     }: FieldPropsOmitInputProps<P, T>) => {
@@ -80,9 +82,13 @@ export default function createField<P>(component: ComponentType<P>) {
         <Component
           {...props}
           value={field.value}
+          onBlur={(...args: any[]) => {
+            helpers.setTouched(true);
+            onBlur?.(...args);
+          }}
           onChange={(value: any, ...args: any[]) => {
             if (!meta.touched) {
-              helpers.setTouched(true);
+              helpers.setTouched(true, false);
             }
             helpers.setValue(value);
             onChange?.(value, ...args);
