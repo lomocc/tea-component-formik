@@ -82,15 +82,15 @@ export default function createField<P>(component: ComponentType<P>) {
         <Component
           {...props}
           value={field.value}
-          onBlur={(...args: any[]) => {
-            helpers.setTouched(true);
+          onBlur={async (...args: any[]) => {
+            await helpers.setTouched(true);
             onBlur?.(...args);
           }}
-          onChange={(value: any, ...args: any[]) => {
+          onChange={async (value: any, ...args: any[]) => {
             if (!meta.touched) {
               helpers.setTouched(true, false);
             }
-            helpers.setValue(value);
+            await helpers.setValue(value);
             onChange?.(value, ...args);
           }}
         />
