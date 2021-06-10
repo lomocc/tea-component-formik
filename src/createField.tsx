@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useState,
 } from 'react';
+import isEqual from 'react-fast-compare';
 import getStatusProps from './getStatusProps';
 
 export interface FieldProps<T extends ElementType> {
@@ -143,6 +144,7 @@ export default function createField<P>(component: ComponentType<P>) {
       } else {
         return element;
       }
-    }
+    },
+    isEqual
   );
 }
