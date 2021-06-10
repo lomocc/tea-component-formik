@@ -54,11 +54,21 @@ const Template: Story = args => (
       alert(JSON.stringify(values));
       console.log('onSubmit', values);
     }}
+    validate={values => {
+      console.log('====================================');
+      console.log('validate', values);
+      console.log('====================================');
+    }}
   >
     {({ handleSubmit }) => (
       <form onSubmit={handleSubmit}>
         <Form>
-          <Input name="username" label="用户名" placeholder="请输入用户名" />
+          <Input
+            name="username"
+            label="用户名"
+            placeholder="请输入用户名"
+            validateOnChange={false}
+          />
           <Input
             name="url"
             label="网站"

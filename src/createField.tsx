@@ -1,6 +1,12 @@
 import { Form, FormItemProps } from '@tencent/tea-component';
 import { useFormikContext } from 'formik';
-import React, { ComponentProps, ComponentType, ElementType } from 'react';
+import React, {
+  ComponentProps,
+  ComponentType,
+  ElementType,
+  useCallback,
+  useState,
+} from 'react';
 import getStatusProps from './getStatusProps';
 
 export interface FieldProps<T extends ElementType> {
@@ -32,6 +38,10 @@ export interface FieldProps<T extends ElementType> {
    * 外层容器属性
    */
   containerProps?: ComponentProps<T>;
+  /** Tells Formik to validate the form on each input's onChange event */
+  validateOnChange?: boolean;
+  /** Tells Formik to validate the form on each input's onBlur event */
+  validateOnBlur?: boolean;
 }
 
 type DistributiveOmit<T, K extends keyof any> = T extends any
@@ -66,6 +76,8 @@ export default function createField<P>(component: ComponentType<P>) {
       formItemProps,
       container,
       containerProps,
+      validateOnChange,
+      validateOnBlur,
       // @ts-ignore
       onBlur,
       // @ts-ignore
@@ -77,22 +89,41 @@ export default function createField<P>(component: ComponentType<P>) {
       const meta = form.getFieldMeta(name);
       const helpers = form.getFieldHelpers(name);
       const Component: ElementType = component;
+      validateOnChange = validateOnChange ?? form.validateOnChange;
+      validateOnBlur = validateOnBlur ?? form.validateOnBlur;
+      const [invalidateValueFlag, setInvalidateValueFlag] = useState(true);
+      const internalOnBlur = useCallback(
+        async (...args: any[]) => {
+          setInvalidateValueFlag(false);
+          await helpers.setTouched(true, invalidateValueFlag && validateOnBlur);
+          onBlur?.(...args);
+        },
+        [
+          onBlur,
+          helpers,
+          setInvalidateValueFlag,
+          invalidateValueFlag,
+          validateOnBlur,
+        ]
+      );
+      const internalOnChange = useCallback(
+        async (value: any, ...args: any[]) => {
+          setInvalidateValueFlag(true);
+          if (!meta.touched) {
+            helpers.setTouched(true, false);
+          }
+          await helpers.setValue(value, validateOnChange);
+          onChange?.(value, ...args);
+        },
+        [onChange, helpers, setInvalidateValueFlag, validateOnChange]
+      );
 
       const children = (
         <Component
           {...props}
           value={field.value}
-          onBlur={async (...args: any[]) => {
-            await helpers.setTouched(true);
-            onBlur?.(...args);
-          }}
-          onChange={async (value: any, ...args: any[]) => {
-            if (!meta.touched) {
-              helpers.setTouched(true, false);
-            }
-            await helpers.setValue(value);
-            onChange?.(value, ...args);
-          }}
+          onBlur={internalOnBlur}
+          onChange={internalOnChange}
         />
       );
       const element = container
