@@ -10,7 +10,7 @@ import React, {
 import isEqual from 'react-fast-compare';
 import getStatusProps from './getStatusProps';
 
-export interface FieldProps<T extends ElementType> {
+export interface FieldProps<T extends ElementType, F extends ElementType> {
   /**
    * Field name
    */
@@ -18,19 +18,29 @@ export interface FieldProps<T extends ElementType> {
   /**
    * Form.Item label
    */
-  label?: FormItemProps['label'];
+  label?: any extends ComponentProps<F>
+    ? never
+    : ComponentProps<F> extends { label?: infer R }
+    ? R
+    : never;
   /**
    * Form.Item required
    */
-  required?: boolean;
+  required?: any extends ComponentProps<F>
+    ? never
+    : ComponentProps<F> extends { required?: infer R }
+    ? R
+    : never;
   /**
    * Form.Item formItem
    */
-  formItem?: ComponentType<FormItemProps> | false;
+  formItem?: F | null;
   /**
    * Form.Item props
    */
-  formItemProps?: FormItemProps;
+  formItemProps?: any extends ComponentProps<F>
+    ? never
+    : Omit<ComponentProps<F>, 'label' | 'required'>;
   /**
    * 外层容器，如：InputAdornment
    */
@@ -52,12 +62,13 @@ type DistributiveOmit<T, K extends keyof any> = T extends any
 /**
  * 排除 value onChange 属性
  */
-export type FieldPropsOmitInputProps<P, T> = DistributiveOmit<
+export type FieldPropsOmitInputProps<
   P,
-  'value' | 'onChange'
-> &
+  T extends ElementType,
+  F extends ElementType
+> = DistributiveOmit<P, 'value' | 'onChange'> &
   Partial<Pick<P, Extract<keyof P, 'onChange'>>> &
-  (T extends ElementType ? FieldProps<T> : never);
+  FieldProps<T, F>;
 
 const memo: <T extends ElementType>(
   Component: T,
@@ -69,11 +80,14 @@ const memo: <T extends ElementType>(
 
 export default function createField<P>(component: ComponentType<P>) {
   return memo(
-    <T extends ElementType>({
+    <
+      T extends ElementType,
+      F extends ElementType = ComponentType<FormItemProps>
+    >({
       name,
       label,
       required,
-      formItem: FormItem = Form.Item,
+      formItem: FormItem,
       formItemProps,
       container,
       containerProps,
@@ -84,7 +98,7 @@ export default function createField<P>(component: ComponentType<P>) {
       // @ts-ignore
       onChange,
       ...props
-    }: FieldPropsOmitInputProps<P, T>) => {
+    }: FieldPropsOmitInputProps<P, T, F>) => {
       const form = useFormikContext();
       const field = form.getFieldProps(name);
       const meta = form.getFieldMeta(name);
@@ -130,8 +144,14 @@ export default function createField<P>(component: ComponentType<P>) {
       const element = container
         ? React.createElement(container, containerProps, children)
         : children;
+
+      if (FormItem === void 0) {
+        // @ts-ignore
+        FormItem = Form.Item;
+      }
       if (FormItem) {
         return (
+          // @ts-ignore
           <FormItem
             label={label}
             required={!!required}
