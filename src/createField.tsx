@@ -130,7 +130,13 @@ export default function createField<P>(component: ComponentType<P>) {
           await helpers.setValue(value, validateOnChange);
           onChange?.(value, ...args);
         },
-        [onChange, helpers, setInvalidateValueFlag, validateOnChange]
+        [
+          meta.touched,
+          onChange,
+          helpers,
+          setInvalidateValueFlag,
+          validateOnChange,
+        ]
       );
 
       const children = (
