@@ -1,5 +1,4 @@
 import {
-  Cascader as Cascader_,
   Checkbox as Checkbox_,
   DatePicker as DatePicker_,
   Input as Input_,
@@ -9,8 +8,8 @@ import {
   Select as Select_,
   SelectMultiple as SelectMultiple_,
   Switch as Switch_,
-  TimePicker as TimePicker_,
-} from '@tencent/tea-component';
+  TimePicker as TimePicker_
+} from 'tea-component';
 import * as Yup from 'yup';
 import createField from './createField';
 
@@ -27,7 +26,9 @@ export const Input = createField(Input_);
 export const InputNumber = createField(InputNumber_);
 export const Password = createField(Input_.Password);
 export const RadioGroup = createField(Radio_.Group);
-export const Cascader = createField(Cascader_);
+
+// Cascader 组件 Typescript 支持有点问题，建议自定义
+// export const Cascader = createField(Cascader_);
 export const Checkbox = createField(Checkbox_);
 export const CheckboxGroup = createField(Checkbox_.Group);
 export const Switch = createField(Switch_);

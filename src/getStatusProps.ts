@@ -1,5 +1,5 @@
-import { FormControlProps } from '@tencent/tea-component';
 import { FieldMetaProps } from 'formik';
+import { FormControlProps } from 'tea-component';
 
 /**
  *  根据 表单 meta 和 isValidating 返回 Form.Item 的 status 和 message

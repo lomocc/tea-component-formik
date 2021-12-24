@@ -1,13 +1,13 @@
-import { Form, FormItemProps } from '@tencent/tea-component';
 import { useFormikContext } from 'formik';
 import React, {
   ComponentProps,
   ComponentType,
   ElementType,
   useCallback,
-  useState,
+  useState
 } from 'react';
 import isEqual from 'react-fast-compare';
+import { Form, FormItemProps } from 'tea-component';
 import getStatusProps from './getStatusProps';
 
 export interface FieldProps<T extends ElementType, F extends ElementType> {
